@@ -1,0 +1,2 @@
+-- Supabase local seed placeholder.
+-- Application seed data is inserted by TypeScript scripts so local and cloud paths stay identical.

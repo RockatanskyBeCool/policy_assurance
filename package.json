@@ -1,0 +1,45 @@
+{
+  "name": "school-policy-compliance-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "tsc -b && npm run typecheck -w @school-policy/web",
+    "dev:api": "npm run dev -w @school-policy/api",
+    "dev:web": "npm run dev -w @school-policy/web",
+    "dev:worker": "npm run dev -w @school-policy/worker",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "redis:start": "docker compose up -d redis redis-commander",
+    "redis:stop": "docker compose down",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:reset:local": "npm run supabase:reset && npm run seed:tecoma",
+    "db:truncate": "tsx scripts/truncate-db.ts",
+    "import:policy-detail-list": "tsx scripts/import-policy-detail-list.ts",
+    "seed:tecoma": "tsx scripts/seed-tecoma.ts",
+    "crawl:school": "tsx scripts/crawl-school.ts",
+    "extract:policy": "npm run extract -w @school-policy/pdf --",
+    "extract:policy:db": "tsx scripts/extract-policy-metadata.ts",
+    "test:qwen": "npm run test:qwen -w @school-policy/pdf",
+    "lint": "npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

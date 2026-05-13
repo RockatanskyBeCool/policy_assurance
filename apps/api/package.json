@@ -1,0 +1,22 @@
+{
+  "name": "@school-policy/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.1.0",
+    "@school-policy/db": "0.1.0",
+    "@school-policy/rules": "0.1.0",
+    "@school-policy/shared": "0.1.0",
+    "fastify": "^5.3.2",
+    "zod": "^3.24.3"
+  }
+}

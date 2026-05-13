@@ -1,0 +1,16 @@
+{
+  "name": "@school-policy/crawler",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty"
+  },
+  "dependencies": {
+    "@school-policy/shared": "0.1.0",
+    "cheerio": "^1.0.0"
+  }
+}

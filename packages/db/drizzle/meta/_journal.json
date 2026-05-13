@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1778152435250,
+      "tag": "0000_slimy_the_twelve",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778338800000,
+      "tag": "0001_extend_pdf_extraction_metadata",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778338801000,
+      "tag": "0002_add_school_contact_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778338802000,
+      "tag": "0003_add_school_leadership_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778419200000,
+      "tag": "0004_align_policy_requirements_with_detail_list",
+      "breakpoints": true
+    }
+  ]
+}

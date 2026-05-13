@@ -1,0 +1,26 @@
+{
+  "name": "@school-policy/pdf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty",
+    "extract": "tsx src/cli.ts",
+    "test:qwen": "tsx src/test-qwen-auth.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.4.2",
+    "execa": "^9.6.1",
+    "jsonrepair": "^3.14.0",
+    "nanoid": "^5.1.11",
+    "openai": "^6.37.0",
+    "p-limit": "^7.3.0",
+    "pdfjs-dist": "^5.7.284",
+    "zod": "^3.25.76"
+  }
+}

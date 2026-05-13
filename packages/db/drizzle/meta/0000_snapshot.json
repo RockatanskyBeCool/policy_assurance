@@ -1,0 +1,2945 @@
+{
+  "id": "51e43846-8897-42f8-a8eb-836fff5899d3",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.compliance_finding": {
+      "name": "compliance_finding",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finding_type": {
+          "name": "finding_type",
+          "type": "finding_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "policy_risk_level",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'medium'"
+        },
+        "status": {
+          "name": "status",
+          "type": "finding_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'open'"
+        },
+        "evidence_pack_id": {
+          "name": "evidence_pack_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_at": {
+          "name": "detected_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen_at": {
+          "name": "last_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolution_type": {
+          "name": "resolution_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_role": {
+          "name": "assigned_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recommended_action": {
+          "name": "recommended_action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "compliance_finding_school_idx": {
+          "name": "compliance_finding_school_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "compliance_finding_policy_idx": {
+          "name": "compliance_finding_policy_idx",
+          "columns": [
+            {
+              "expression": "policy_requirement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "compliance_finding_school_id_school_id_fk": {
+          "name": "compliance_finding_school_id_school_id_fk",
+          "tableFrom": "compliance_finding",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "compliance_finding_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "compliance_finding_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "compliance_finding",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "compliance_finding_evidence_pack_id_evidence_pack_id_fk": {
+          "name": "compliance_finding_evidence_pack_id_evidence_pack_id_fk",
+          "tableFrom": "compliance_finding",
+          "tableTo": "evidence_pack",
+          "columnsFrom": [
+            "evidence_pack_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.crawl_run": {
+      "name": "crawl_run",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crawl_type": {
+          "name": "crawl_type",
+          "type": "crawl_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crawl_status": {
+          "name": "crawl_status",
+          "type": "crawl_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'queued'"
+        },
+        "seed_urls": {
+          "name": "seed_urls",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pages_visited_count": {
+          "name": "pages_visited_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "pdfs_discovered_count": {
+          "name": "pdfs_discovered_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "pdfs_downloaded_count": {
+          "name": "pdfs_downloaded_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "errors_count": {
+          "name": "errors_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "cache_hit_count": {
+          "name": "cache_hit_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "cache_miss_count": {
+          "name": "cache_miss_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "crawl_runs_school_idx": {
+          "name": "crawl_runs_school_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "started_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "crawl_run_school_id_school_id_fk": {
+          "name": "crawl_run_school_id_school_id_fk",
+          "tableFrom": "crawl_run",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.crawl_url_cache": {
+      "name": "crawl_url_cache",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_url": {
+          "name": "normalized_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url_type": {
+          "name": "url_type",
+          "type": "url_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "http_status": {
+          "name": "http_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etag": {
+          "name": "etag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_modified_header": {
+          "name": "last_modified_header",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_seen_at": {
+          "name": "first_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen_at": {
+          "name": "last_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_checked_at": {
+          "name": "last_checked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "next_check_after": {
+          "name": "next_check_after",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cache_status": {
+          "name": "cache_status",
+          "type": "cache_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'stale'"
+        },
+        "storage_uri": {
+          "name": "storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "crawl_url_school_url_idx": {
+          "name": "crawl_url_school_url_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "normalized_url",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "crawl_url_hash_idx": {
+          "name": "crawl_url_hash_idx",
+          "columns": [
+            {
+              "expression": "content_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "crawl_url_cache_school_id_school_id_fk": {
+          "name": "crawl_url_cache_school_id_school_id_fk",
+          "tableFrom": "crawl_url_cache",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.department_sync_run": {
+      "name": "department_sync_run",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_system": {
+          "name": "source_system",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'department_api'"
+        },
+        "api_version": {
+          "name": "api_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sync_status": {
+          "name": "sync_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'running'"
+        },
+        "records_seen": {
+          "name": "records_seen",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "records_created": {
+          "name": "records_created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "records_updated": {
+          "name": "records_updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "records_deprecated": {
+          "name": "records_deprecated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "error_summary": {
+          "name": "error_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.discovered_pdf": {
+      "name": "discovered_pdf",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "crawl_run_id": {
+          "name": "crawl_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_page_url": {
+          "name": "source_page_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pdf_url": {
+          "name": "pdf_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_pdf_url": {
+          "name": "normalized_pdf_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "filename": {
+          "name": "filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_text": {
+          "name": "link_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "surrounding_text": {
+          "name": "surrounding_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "http_status": {
+          "name": "http_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_length": {
+          "name": "content_length",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etag": {
+          "name": "etag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_modified_header": {
+          "name": "last_modified_header",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pdf_storage_uri": {
+          "name": "pdf_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_seen_at": {
+          "name": "first_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen_at": {
+          "name": "last_seen_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_downloaded_at": {
+          "name": "last_downloaded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_currently_accessible": {
+          "name": "is_currently_accessible",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "discovered_pdf_school_url_idx": {
+          "name": "discovered_pdf_school_url_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "normalized_pdf_url",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "discovered_pdf_hash_idx": {
+          "name": "discovered_pdf_hash_idx",
+          "columns": [
+            {
+              "expression": "content_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "discovered_pdf_school_id_school_id_fk": {
+          "name": "discovered_pdf_school_id_school_id_fk",
+          "tableFrom": "discovered_pdf",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "discovered_pdf_crawl_run_id_crawl_run_id_fk": {
+          "name": "discovered_pdf_crawl_run_id_crawl_run_id_fk",
+          "tableFrom": "discovered_pdf",
+          "tableTo": "crawl_run",
+          "columnsFrom": [
+            "crawl_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.evidence_pack": {
+      "name": "evidence_pack",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "storage_uri": {
+          "name": "storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "evidence_json": {
+          "name": "evidence_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.page_link": {
+      "name": "page_link",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "page_snapshot_id": {
+          "name": "page_snapshot_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_url": {
+          "name": "target_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_target_url": {
+          "name": "normalized_target_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "link_text": {
+          "name": "link_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "surrounding_text": {
+          "name": "surrounding_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_type": {
+          "name": "link_type",
+          "type": "url_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "file_extension": {
+          "name": "file_extension",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_same_domain": {
+          "name": "is_same_domain",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "discovery_score": {
+          "name": "discovery_score",
+          "type": "numeric(6, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "page_link_target_idx": {
+          "name": "page_link_target_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "normalized_target_url",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "page_link_page_snapshot_id_page_snapshot_id_fk": {
+          "name": "page_link_page_snapshot_id_page_snapshot_id_fk",
+          "tableFrom": "page_link",
+          "tableTo": "page_snapshot",
+          "columnsFrom": [
+            "page_snapshot_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "page_link_school_id_school_id_fk": {
+          "name": "page_link_school_id_school_id_fk",
+          "tableFrom": "page_link",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.page_snapshot": {
+      "name": "page_snapshot",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "crawl_run_id": {
+          "name": "crawl_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_url": {
+          "name": "normalized_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "html_storage_uri": {
+          "name": "html_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_storage_uri": {
+          "name": "text_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "captured_at": {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "http_status": {
+          "name": "http_status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_url": {
+          "name": "parent_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crawl_depth": {
+          "name": "crawl_depth",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "page_snapshot_school_idx": {
+          "name": "page_snapshot_school_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "normalized_url",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "page_snapshot_crawl_run_id_crawl_run_id_fk": {
+          "name": "page_snapshot_crawl_run_id_crawl_run_id_fk",
+          "tableFrom": "page_snapshot",
+          "tableTo": "crawl_run",
+          "columnsFrom": [
+            "crawl_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "page_snapshot_school_id_school_id_fk": {
+          "name": "page_snapshot_school_id_school_id_fk",
+          "tableFrom": "page_snapshot",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pdf_extraction": {
+      "name": "pdf_extraction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "discovered_pdf_id": {
+          "name": "discovered_pdf_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extraction_status": {
+          "name": "extraction_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "extraction_method": {
+          "name": "extraction_method",
+          "type": "extraction_method",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text_storage_uri": {
+          "name": "text_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "structured_json_uri": {
+          "name": "structured_json_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "page_count": {
+          "name": "page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_title": {
+          "name": "detected_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_dates": {
+          "name": "detected_dates",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "detected_review_date": {
+          "name": "detected_review_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_approval_date": {
+          "name": "detected_approval_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_endorsement_date": {
+          "name": "detected_endorsement_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_version": {
+          "name": "detected_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detected_school_name": {
+          "name": "detected_school_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_confidence": {
+          "name": "extraction_confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extracted_at": {
+          "name": "extracted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pdf_extraction_discovered_pdf_id_discovered_pdf_id_fk": {
+          "name": "pdf_extraction_discovered_pdf_id_discovered_pdf_id_fk",
+          "tableFrom": "pdf_extraction",
+          "tableTo": "discovered_pdf",
+          "columnsFrom": [
+            "discovered_pdf_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_alias": {
+      "name": "policy_alias",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alias_text": {
+          "name": "alias_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alias_type": {
+          "name": "alias_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'department'"
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'department_api'"
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'1'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "policy_alias_policy_idx": {
+          "name": "policy_alias_policy_idx",
+          "columns": [
+            {
+              "expression": "policy_requirement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "policy_alias_text_idx": {
+          "name": "policy_alias_text_idx",
+          "columns": [
+            {
+              "expression": "alias_text",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "policy_alias_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "policy_alias_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "policy_alias",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_applicability_rule": {
+      "name": "policy_applicability_rule",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applies_to_school_type": {
+          "name": "applies_to_school_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "applies_to_year_levels": {
+          "name": "applies_to_year_levels",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "applies_if_feature_present": {
+          "name": "applies_if_feature_present",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rule_expression": {
+          "name": "rule_expression",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "explanation": {
+          "name": "explanation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "policy_applicability_rule_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "policy_applicability_rule_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "policy_applicability_rule",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_candidate_match": {
+      "name": "policy_candidate_match",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "discovered_pdf_id": {
+          "name": "discovered_pdf_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_template_id": {
+          "name": "policy_template_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "match_status": {
+          "name": "match_status",
+          "type": "match_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'candidate'"
+        },
+        "match_confidence": {
+          "name": "match_confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "match_method": {
+          "name": "match_method",
+          "type": "match_method",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_summary": {
+          "name": "evidence_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "matched_alias": {
+          "name": "matched_alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title_score": {
+          "name": "title_score",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_text_score": {
+          "name": "link_text_score",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_score": {
+          "name": "content_score",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "template_similarity_score": {
+          "name": "template_similarity_score",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_validity_score": {
+          "name": "date_validity_score",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_by_user_id": {
+          "name": "reviewed_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "policy_candidate_match_pdf_idx": {
+          "name": "policy_candidate_match_pdf_idx",
+          "columns": [
+            {
+              "expression": "discovered_pdf_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "policy_candidate_match_requirement_idx": {
+          "name": "policy_candidate_match_requirement_idx",
+          "columns": [
+            {
+              "expression": "policy_requirement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "policy_candidate_match_discovered_pdf_id_discovered_pdf_id_fk": {
+          "name": "policy_candidate_match_discovered_pdf_id_discovered_pdf_id_fk",
+          "tableFrom": "policy_candidate_match",
+          "tableTo": "discovered_pdf",
+          "columnsFrom": [
+            "discovered_pdf_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "policy_candidate_match_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "policy_candidate_match_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "policy_candidate_match",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "policy_candidate_match_policy_template_id_policy_template_id_fk": {
+          "name": "policy_candidate_match_policy_template_id_policy_template_id_fk",
+          "tableFrom": "policy_candidate_match",
+          "tableTo": "policy_template",
+          "columnsFrom": [
+            "policy_template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_requirement": {
+      "name": "policy_requirement",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "department_policy_id": {
+          "name": "department_policy_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "canonical_name": {
+          "name": "canonical_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_category": {
+          "name": "policy_category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "policy_visibility",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applies_to_all_schools": {
+          "name": "applies_to_all_schools",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "risk_level": {
+          "name": "risk_level",
+          "type": "policy_risk_level",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'medium'"
+        },
+        "responsible_role": {
+          "name": "responsible_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "council_endorsement_required": {
+          "name": "council_endorsement_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "active_from": {
+          "name": "active_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active_to": {
+          "name": "active_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "policy_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "source_updated_at": {
+          "name": "source_updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "local_synced_at": {
+          "name": "local_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "policy_requirement_department_policy_id_idx": {
+          "name": "policy_requirement_department_policy_id_idx",
+          "columns": [
+            {
+              "expression": "department_policy_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "policy_requirement_name_idx": {
+          "name": "policy_requirement_name_idx",
+          "columns": [
+            {
+              "expression": "canonical_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_review_rule": {
+      "name": "policy_review_rule",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cadence_type": {
+          "name": "cadence_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'fixed_interval'"
+        },
+        "cadence_interval_months": {
+          "name": "cadence_interval_months",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_anchor": {
+          "name": "review_anchor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'review_date'"
+        },
+        "grace_period_days": {
+          "name": "grace_period_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "due_rule_description": {
+          "name": "due_rule_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active_from": {
+          "name": "active_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active_to": {
+          "name": "active_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "policy_review_rule_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "policy_review_rule_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "policy_review_rule",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_template_clause": {
+      "name": "policy_template_clause",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_template_id": {
+          "name": "policy_template_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clause_key": {
+          "name": "clause_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heading": {
+          "name": "heading",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clause_text": {
+          "name": "clause_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clause_type": {
+          "name": "clause_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'body'"
+        },
+        "is_mandatory": {
+          "name": "is_mandatory",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_editable": {
+          "name": "is_editable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "expected_position": {
+          "name": "expected_position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "semantic_hash": {
+          "name": "semantic_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "policy_template_clause_template_idx": {
+          "name": "policy_template_clause_template_idx",
+          "columns": [
+            {
+              "expression": "policy_template_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "policy_template_clause_policy_template_id_policy_template_id_fk": {
+          "name": "policy_template_clause_policy_template_id_policy_template_id_fk",
+          "tableFrom": "policy_template_clause",
+          "tableTo": "policy_template",
+          "columnsFrom": [
+            "policy_template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_template_content": {
+      "name": "policy_template_content",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_template_id": {
+          "name": "policy_template_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_storage_uri": {
+          "name": "content_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extracted_text_storage_uri": {
+          "name": "extracted_text_storage_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "structured_content_json_uri": {
+          "name": "structured_content_json_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "template_format": {
+          "name": "template_format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_status": {
+          "name": "extraction_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "policy_template_content_policy_template_id_policy_template_id_fk": {
+          "name": "policy_template_content_policy_template_id_policy_template_id_fk",
+          "tableFrom": "policy_template_content",
+          "tableTo": "policy_template",
+          "columnsFrom": [
+            "policy_template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.policy_template": {
+      "name": "policy_template",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_template_id": {
+          "name": "department_template_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "template_name": {
+          "name": "template_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "template_version": {
+          "name": "template_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effective_to": {
+          "name": "effective_to",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "policy_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "source_url_or_api_ref": {
+          "name": "source_url_or_api_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_updated_at": {
+          "name": "source_updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "local_synced_at": {
+          "name": "local_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "policy_template_source_idx": {
+          "name": "policy_template_source_idx",
+          "columns": [
+            {
+              "expression": "department_template_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "template_version",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "policy_template_requirement_idx": {
+          "name": "policy_template_requirement_idx",
+          "columns": [
+            {
+              "expression": "policy_requirement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "policy_template_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "policy_template_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "policy_template",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.school_policy_inventory": {
+      "name": "school_policy_inventory",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_requirement_id": {
+          "name": "policy_requirement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "current_discovered_pdf_id": {
+          "name": "current_discovered_pdf_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_match_id": {
+          "name": "current_match_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inventory_status": {
+          "name": "inventory_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "public_url": {
+          "name": "public_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_found_at": {
+          "name": "first_found_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_confirmed_at": {
+          "name": "last_confirmed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_changed_at": {
+          "name": "last_changed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "school_policy_inventory_school_policy_idx": {
+          "name": "school_policy_inventory_school_policy_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "policy_requirement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "school_policy_inventory_school_id_school_id_fk": {
+          "name": "school_policy_inventory_school_id_school_id_fk",
+          "tableFrom": "school_policy_inventory",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "school_policy_inventory_policy_requirement_id_policy_requirement_id_fk": {
+          "name": "school_policy_inventory_policy_requirement_id_policy_requirement_id_fk",
+          "tableFrom": "school_policy_inventory",
+          "tableTo": "policy_requirement",
+          "columnsFrom": [
+            "policy_requirement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "school_policy_inventory_current_discovered_pdf_id_discovered_pdf_id_fk": {
+          "name": "school_policy_inventory_current_discovered_pdf_id_discovered_pdf_id_fk",
+          "tableFrom": "school_policy_inventory",
+          "tableTo": "discovered_pdf",
+          "columnsFrom": [
+            "current_discovered_pdf_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "school_policy_inventory_current_match_id_policy_candidate_match_id_fk": {
+          "name": "school_policy_inventory_current_match_id_policy_candidate_match_id_fk",
+          "tableFrom": "school_policy_inventory",
+          "tableTo": "policy_candidate_match",
+          "columnsFrom": [
+            "current_match_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.school_site_profile": {
+      "name": "school_site_profile",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "school_id": {
+          "name": "school_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "homepage_url": {
+          "name": "homepage_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "known_policy_page_url": {
+          "name": "known_policy_page_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "known_document_repository_url": {
+          "name": "known_document_repository_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cms_type": {
+          "name": "cms_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sitemap_url": {
+          "name": "sitemap_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "robots_url": {
+          "name": "robots_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crawl_strategy": {
+          "name": "crawl_strategy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'adaptive'"
+        },
+        "crawl_depth_limit": {
+          "name": "crawl_depth_limit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 5
+        },
+        "known_policy_pages": {
+          "name": "known_policy_pages",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "known_document_pages": {
+          "name": "known_document_pages",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "known_pdf_patterns": {
+          "name": "known_pdf_patterns",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_profiled_at": {
+          "name": "last_profiled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "school_site_profile_school_idx": {
+          "name": "school_site_profile_school_idx",
+          "columns": [
+            {
+              "expression": "school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "school_site_profile_school_id_school_id_fk": {
+          "name": "school_site_profile_school_id_school_id_fk",
+          "tableFrom": "school_site_profile",
+          "tableTo": "school",
+          "columnsFrom": [
+            "school_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.school": {
+      "name": "school",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "department_school_id": {
+          "name": "department_school_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_name": {
+          "name": "school_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_type": {
+          "name": "school_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region": {
+          "name": "region",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website_url": {
+          "name": "website_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "canonical_domain": {
+          "name": "canonical_domain",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "last_successful_crawl_at": {
+          "name": "last_successful_crawl_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_policy_change_detected_at": {
+          "name": "last_policy_change_detected_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "school_department_school_id_idx": {
+          "name": "school_department_school_id_idx",
+          "columns": [
+            {
+              "expression": "department_school_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "school_domain_idx": {
+          "name": "school_domain_idx",
+          "columns": [
+            {
+              "expression": "canonical_domain",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.cache_status": {
+      "name": "cache_status",
+      "schema": "public",
+      "values": [
+        "fresh",
+        "stale",
+        "not_modified",
+        "changed",
+        "failed"
+      ]
+    },
+    "public.crawl_status": {
+      "name": "crawl_status",
+      "schema": "public",
+      "values": [
+        "queued",
+        "running",
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "public.crawl_type": {
+      "name": "crawl_type",
+      "schema": "public",
+      "values": [
+        "full_discovery",
+        "incremental_refresh",
+        "targeted_policy_check",
+        "manual_recheck"
+      ]
+    },
+    "public.extraction_method": {
+      "name": "extraction_method",
+      "schema": "public",
+      "values": [
+        "pdf_text",
+        "ocr",
+        "hybrid",
+        "failed"
+      ]
+    },
+    "public.finding_status": {
+      "name": "finding_status",
+      "schema": "public",
+      "values": [
+        "open",
+        "in_progress",
+        "challenged",
+        "resolved",
+        "dismissed"
+      ]
+    },
+    "public.finding_type": {
+      "name": "finding_type",
+      "schema": "public",
+      "values": [
+        "missing_public_policy",
+        "policy_not_discoverable",
+        "broken_policy_link",
+        "outdated_review_date",
+        "template_version_outdated",
+        "mandatory_clause_missing",
+        "duplicate_versions_found",
+        "low_confidence_match",
+        "policy_due_soon",
+        "council_endorsement_missing"
+      ]
+    },
+    "public.match_method": {
+      "name": "match_method",
+      "schema": "public",
+      "values": [
+        "exact_alias",
+        "filename_match",
+        "link_text_match",
+        "template_phrase_match",
+        "semantic_match",
+        "llm_assisted",
+        "manual_override"
+      ]
+    },
+    "public.match_status": {
+      "name": "match_status",
+      "schema": "public",
+      "values": [
+        "candidate",
+        "accepted",
+        "rejected",
+        "needs_review"
+      ]
+    },
+    "public.policy_risk_level": {
+      "name": "policy_risk_level",
+      "schema": "public",
+      "values": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "public.policy_status": {
+      "name": "policy_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "deprecated",
+        "draft"
+      ]
+    },
+    "public.policy_visibility": {
+      "name": "policy_visibility",
+      "schema": "public",
+      "values": [
+        "public",
+        "internal",
+        "public_and_internal"
+      ]
+    },
+    "public.url_type": {
+      "name": "url_type",
+      "schema": "public",
+      "values": [
+        "html",
+        "pdf",
+        "docx",
+        "asset",
+        "external",
+        "unknown"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

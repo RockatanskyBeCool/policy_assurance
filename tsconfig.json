@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/db" },
+    { "path": "./packages/policy-registry" },
+    { "path": "./packages/crawler" },
+    { "path": "./packages/pdf" },
+    { "path": "./packages/matching" },
+    { "path": "./packages/rules" },
+    { "path": "./apps/api" },
+    { "path": "./apps/worker" }
+  ]
+}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+.venv*/
+.DS_Store
+storage/**
+!storage/.gitkeep
+data/**
+!data/.gitkeep
+**/data/**
+!**/data/.gitkeep
+*.tsbuildinfo
+.tanstack/
+~$*.pptx
