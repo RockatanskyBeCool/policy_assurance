@@ -1,6 +1,6 @@
 import { Queue, Worker } from "bullmq";
 import { Redis } from "ioredis";
-import { SchoolSiteCrawler } from "@school-policy/crawler";
+import { filenameFromUrl, SchoolSiteCrawler, sortCandidatePdfs } from "@school-policy/crawler";
 import type { CrawlType } from "@school-policy/shared";
 
 export interface CrawlSchoolJob {
@@ -22,8 +22,7 @@ const worker = new Worker<CrawlSchoolJob>(
     const crawler = new SchoolSiteCrawler();
     const seeds = [
       { schoolId: job.data.schoolId, url: job.data.homepageUrl, reason: "homepage" as const, priority: 10 },
-      ...(job.data.knownPolicyPages ?? []).map((url) => ({ schoolId: job.data.schoolId, url, reason: "known_policy_page" as const, priority: 20 })),
-      ...(job.data.knownPdfUrls ?? []).map((url) => ({ schoolId: job.data.schoolId, url, reason: "known_pdf" as const, priority: 30 }))
+      ...(job.data.knownPolicyPages ?? []).map((url) => ({ schoolId: job.data.schoolId, url, reason: "known_policy_page" as const, priority: 20 }))
     ];
 
     const result = await crawler.crawl({
@@ -36,9 +35,16 @@ const worker = new Worker<CrawlSchoolJob>(
       userAgent: "SchoolPolicyComplianceMvp/0.1 (+local development)"
     });
 
+    const knownPdfCandidates = (job.data.knownPdfUrls ?? []).map((url) => ({
+      url,
+      sourcePageUrl: job.data.homepageUrl,
+      filename: filenameFromUrl(url),
+      discoveryScore: job.data.crawlType === "full_discovery" ? 25 : 50
+    }));
+
     return {
       pagesVisited: result.pages.length,
-      candidatePdfs: result.candidatePdfs
+      candidatePdfs: sortCandidatePdfs([...knownPdfCandidates, ...result.candidatePdfs]).slice(0, 100)
     };
   },
   { connection }

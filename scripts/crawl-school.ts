@@ -67,6 +67,7 @@ const existingKnownPolicyPages = uniqueStrings([
   ...(profile?.knownPolicyPages ?? []),
   ...(profile?.knownDocumentPages ?? [])
 ]);
+const existingKnownDocumentPages = uniqueStrings(profile?.knownDocumentPages ?? []);
 const knownPdfUrls = uniqueStrings([
   ...inventoryRows.map((row) => row.publicUrl),
   ...inventoryRows
@@ -74,7 +75,7 @@ const knownPdfUrls = uniqueStrings([
     .filter(Boolean),
   ...discoveredPdfRows.filter((row) => row.isCurrentlyAccessible).map((row) => row.pdfUrl)
 ]);
-const shouldRunSitemapDiscovery = isBroadDiscovery || !profile || existingKnownPolicyPages.length === 0;
+const shouldRunSitemapDiscovery = isBroadDiscovery || !profile || existingKnownPolicyPages.length === 0 || existingKnownDocumentPages.length === 0;
 const sitemapDiscovery =
   shouldRunSitemapDiscovery && cmsProfile.cmsType === "wordpress"
     ? await discoverFromSitemaps(cmsProfile.sitemapUrls, school.websiteUrl, {
@@ -923,6 +924,8 @@ async function upsertSiteProfile(): Promise<void> {
     ...(existing?.knownPolicyPages ?? []),
     ...sitemapDiscovery.pageUrls.slice(0, 20).map((page) => page.url)
   ].filter(Boolean) as string[];
+  const knownDocumentPages = uniqueStrings([...(existing?.knownDocumentPages ?? []), ...sitemapDiscovery.pageUrls.slice(0, 20).map((page) => page.url)]);
+  const knownPdfPatterns = uniqueStrings([...(existing?.knownPdfPatterns ?? []), `${new URL(school.websiteUrl).origin}/wp-content/uploads/`]);
   const values = {
     homepageUrl: school.websiteUrl,
     knownPolicyPageUrl: knownPolicyPages[0],
@@ -933,8 +936,8 @@ async function upsertSiteProfile(): Promise<void> {
     crawlStrategy: `${cmsProfile.cmsType}_playbook`,
     crawlDepthLimit: 5,
     knownPolicyPages: [...new Set(knownPolicyPages)],
-    knownDocumentPages: sitemapDiscovery.pageUrls.slice(0, 20).map((page) => page.url),
-    knownPdfPatterns: [`${new URL(school.websiteUrl).origin}/wp-content/uploads/`],
+    knownDocumentPages,
+    knownPdfPatterns,
     lastProfiledAt: new Date()
   };
 
