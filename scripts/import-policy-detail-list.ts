@@ -116,7 +116,7 @@ try {
         "local_policy_detail_list",
         buildDescription(row),
         inferVisibility(requiredCommunicationMethods, recommendedCommunicationMethods),
-        requirementForLocalPolicy === "Mandatory",
+        isMandatoryRequirement(requirementForLocalPolicy),
         inferRiskLevel(requirementForLocalPolicy),
         approvalRequirements,
         approvalRequirements?.toLowerCase().includes("school council") ?? false,
@@ -227,6 +227,10 @@ function inferRiskLevel(requirementForLocalPolicy: string | null): "critical" | 
   if (requirementForLocalPolicy === "Mandatory") return "high";
   if (requirementForLocalPolicy?.startsWith("Mandatory -")) return "medium";
   return "low";
+}
+
+function isMandatoryRequirement(requirementForLocalPolicy: string | null): boolean {
+  return /^\s*mandatory\b/i.test(requirementForLocalPolicy ?? "");
 }
 
 function cleanList(value: string[] | null | undefined): string[] {

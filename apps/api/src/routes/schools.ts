@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { createDb, schema } from "@school-policy/db";
 import { evaluatePolicyInventoryRow } from "@school-policy/rules";
@@ -63,12 +63,7 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
     const requirements = await db
       .select()
       .from(schema.policyRequirements)
-      .where(
-        and(
-          eq(schema.policyRequirements.status, "active"),
-          inArray(schema.policyRequirements.visibility, ["public", "public_and_internal"])
-        )
-      );
+      .where(eq(schema.policyRequirements.status, "active"));
 
     const inventoryRows = await db
       .select()
