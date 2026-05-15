@@ -32,3 +32,6 @@ export * from "./extraction/candidate-detection-service.js";
 export * from "./extraction/date-utils.js";
 export * from "./extraction/json-repair-service.js";
 export * from "./extraction/validation-service.js";
+export * from "./alignment/schemas.js";
+export * from "./alignment/policy-alignment-prompt.js";
+export * from "./alignment/policy-alignment-service.js";

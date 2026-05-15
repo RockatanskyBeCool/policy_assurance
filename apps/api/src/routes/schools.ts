@@ -1,4 +1,4 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { createDb, schema } from "@school-policy/db";
 import { evaluatePolicyInventoryRow } from "@school-policy/rules";
@@ -63,7 +63,14 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
     const requirements = await db
       .select()
       .from(schema.policyRequirements)
-      .where(eq(schema.policyRequirements.status, "active"));
+      .where(
+        and(
+          eq(schema.policyRequirements.status, "active"),
+          eq(schema.policyRequirements.mandatory, true),
+          eq(schema.policyRequirements.visibility, "public")
+        )
+      );
+    const requirementIds = requirements.map((requirement) => requirement.id);
 
     const inventoryRows = await db
       .select()
@@ -86,6 +93,31 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
       matchIds.length > 0 ? await db.select().from(schema.policyCandidateMatches).where(inArray(schema.policyCandidateMatches.id, matchIds)) : [];
     const matchById = new Map(matches.map((row) => [row.id, row]));
 
+    const allPolicyMatches =
+      requirementIds.length > 0
+        ? await db
+            .select()
+            .from(schema.policyCandidateMatches)
+            .where(inArray(schema.policyCandidateMatches.policyRequirementId, requirementIds))
+        : [];
+    const matchedPdfIds = [...new Set(allPolicyMatches.map((match) => match.discoveredPdfId))];
+    const matchedPdfs =
+      matchedPdfIds.length > 0
+        ? await db.select().from(schema.discoveredPdfs).where(inArray(schema.discoveredPdfs.id, matchedPdfIds))
+        : [];
+    const matchedPdfById = new Map(matchedPdfs.filter((pdf) => pdf.schoolId === school.id).map((pdf) => [pdf.id, pdf]));
+    const policyLinkHealth = buildPolicyLinkHealth(allPolicyMatches, matchedPdfById);
+
+    const findings =
+      requirementIds.length > 0
+        ? await db
+            .select()
+            .from(schema.complianceFindings)
+            .where(and(eq(schema.complianceFindings.schoolId, school.id), inArray(schema.complianceFindings.policyRequirementId, requirementIds)))
+        : [];
+    const openBrokenLinkFindingsByPolicy = countOpenBrokenLinkFindingsByPolicy(findings);
+    const openDuplicateFindingsByPolicy = countOpenDuplicateFindingsByPolicy(findings);
+
     const extractions =
       discoveredPdfIds.length > 0
         ? await db.select().from(schema.pdfExtractions).where(inArray(schema.pdfExtractions.discoveredPdfId, discoveredPdfIds))
@@ -93,7 +125,6 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
     const extractionByPdfId = latestExtractionByPdfId(extractions);
 
     const policies = requirements
-      .filter((requirement) => requirement.appliesToAllSchools)
       .sort((left, right) => left.canonicalName.localeCompare(right.canonicalName))
       .map((requirement) => {
         const inventory = inventoryByRequirementId.get(requirement.id);
@@ -106,11 +137,18 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
           nextReviewDate: extraction?.detectedNextReviewDate ?? null,
           evaluationDate
         });
+        const linkHealth = policyLinkHealth.get(requirement.id);
+        const brokenLinkCount = Math.max(linkHealth?.brokenPdfUrls.size ?? 0, openBrokenLinkFindingsByPolicy.get(requirement.id) ?? 0);
+        const duplicateCandidateCount = linkHealth?.pdfUrls.size ?? 0;
+        const duplicateFindingCount = openDuplicateFindingsByPolicy.get(requirement.id) ?? 0;
+        const duplicates = duplicateCandidateCount > 1 || duplicateFindingCount > 0;
 
         return {
           policyRequirementId: requirement.id,
           policyName: requirement.canonicalName,
           present: evaluation.present,
+          linked: evaluation.present && brokenLinkCount === 0,
+          duplicates,
           approvalDate: toDateString(extraction?.detectedApprovalDate),
           approvedBy: parseApprovers(extraction?.detectedApprovers),
           reviewCycleYears: parseReviewCycleYears(extraction?.detectedReviewCycle),
@@ -118,6 +156,8 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
           compliant: evaluation.compliant,
           criteria: {
             present: evaluation.present,
+            linked: evaluation.present && brokenLinkCount === 0,
+            noDuplicateVersions: !duplicates,
             reviewDateInFuture: evaluation.reviewDateInFuture
           },
           evidence: {
@@ -128,7 +168,10 @@ export async function registerSchoolRoutes(app: FastifyInstance): Promise<void> 
             publicUrl: inventory?.publicUrl ?? null,
             extractionId: extraction?.id ?? null,
             extractionConfidence: parseNullableNumber(extraction?.extractionConfidence),
-            requiresHumanReview: extraction?.requiresHumanReview ?? false
+            requiresHumanReview: extraction?.requiresHumanReview ?? false,
+            brokenLinkCount,
+            duplicateFindingCount,
+            duplicateCandidateCount
           }
         };
       });
@@ -182,6 +225,55 @@ async function selectSchoolRows(whereClause?: ReturnType<typeof sql>): Promise<S
     : sql<SchoolRow>`select id, department_school_id, school_name, school_type, address, region, website_url, principal, council_president, last_successful_crawl_at from school`;
   const result = await db.execute(query);
   return result.rows as unknown as SchoolRow[];
+}
+
+function buildPolicyLinkHealth(
+  matches: Array<typeof schema.policyCandidateMatches.$inferSelect>,
+  pdfById: Map<string, typeof schema.discoveredPdfs.$inferSelect>
+): Map<string, { pdfUrls: Set<string>; brokenPdfUrls: Set<string> }> {
+  const healthByPolicy = new Map<string, { pdfUrls: Set<string>; brokenPdfUrls: Set<string> }>();
+
+  for (const match of matches) {
+    const pdf = pdfById.get(match.discoveredPdfId);
+    if (!pdf) continue;
+
+    const health = healthByPolicy.get(match.policyRequirementId) ?? { pdfUrls: new Set<string>(), brokenPdfUrls: new Set<string>() };
+    health.pdfUrls.add(pdf.normalizedPdfUrl);
+    if (!pdf.isCurrentlyAccessible || (pdf.httpStatus !== null && pdf.httpStatus >= 400)) {
+      health.brokenPdfUrls.add(pdf.normalizedPdfUrl);
+    }
+    healthByPolicy.set(match.policyRequirementId, health);
+  }
+
+  return healthByPolicy;
+}
+
+function countOpenBrokenLinkFindingsByPolicy(
+  findings: Array<typeof schema.complianceFindings.$inferSelect>
+): Map<string, number> {
+  const counts = new Map<string, number>();
+
+  for (const finding of findings) {
+    if (finding.findingType !== "broken_policy_link") continue;
+    if (!["open", "in_progress", "challenged"].includes(finding.status)) continue;
+    counts.set(finding.policyRequirementId, (counts.get(finding.policyRequirementId) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function countOpenDuplicateFindingsByPolicy(
+  findings: Array<typeof schema.complianceFindings.$inferSelect>
+): Map<string, number> {
+  const counts = new Map<string, number>();
+
+  for (const finding of findings) {
+    if (finding.findingType !== "duplicate_versions_found") continue;
+    if (!["open", "in_progress", "challenged"].includes(finding.status)) continue;
+    counts.set(finding.policyRequirementId, (counts.get(finding.policyRequirementId) ?? 0) + 1);
+  }
+
+  return counts;
 }
 
 function latestExtractionByPdfId(

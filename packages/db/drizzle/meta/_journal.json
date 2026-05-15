@@ -36,6 +36,13 @@
       "when": 1778419200000,
       "tag": "0004_align_policy_requirements_with_detail_list",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778688000000,
+      "tag": "0005_add_policy_requirement_mandatory",
+      "breakpoints": true
     }
   ]
 }

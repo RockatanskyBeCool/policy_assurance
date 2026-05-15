@@ -39,6 +39,8 @@ type SchoolPolicyInventoryResponse = {
     policyRequirementId: string
     policyName: string
     present: boolean
+    linked: boolean
+    duplicates: boolean
     approvalDate: string | null
     approvedBy: string[]
     reviewCycleYears: number | null
@@ -46,6 +48,8 @@ type SchoolPolicyInventoryResponse = {
     compliant: boolean
     criteria: {
       present: boolean
+      linked: boolean
+      noDuplicateVersions: boolean
       reviewDateInFuture: boolean
       templateAligned?: boolean
       mandatoryClausesPresent?: boolean
@@ -59,6 +63,9 @@ type SchoolPolicyInventoryResponse = {
       extractionId: string | null
       extractionConfidence: number | null
       requiresHumanReview: boolean
+      brokenLinkCount: number
+      duplicateFindingCount: number
+      duplicateCandidateCount: number
     }
   }>
 }
@@ -131,6 +138,8 @@ function SchoolPolicyInventoryView() {
                 <tr>
                   <th>Policy Name</th>
                   <th>Present</th>
+                  <th>Linked?</th>
+                  <th>Duplicates</th>
                   <th>Approval Date</th>
                   <th>Approved By</th>
                   <th>Review Cycle</th>
@@ -146,6 +155,12 @@ function SchoolPolicyInventoryView() {
                     </td>
                     <td>
                       <StatusBadge value={policy.present} positiveLabel="Yes" negativeLabel="No" />
+                    </td>
+                    <td>
+                      <StatusBadge value={policy.linked} positiveLabel="Yes" negativeLabel="No" />
+                    </td>
+                    <td>
+                      <StatusBadge value={!policy.duplicates} positiveLabel="No" negativeLabel="Yes" />
                     </td>
                     <td>{formatDate(policy.approvalDate)}</td>
                     <td>{policy.approvedBy.length > 0 ? policy.approvedBy.join(', ') : 'Not found'}</td>

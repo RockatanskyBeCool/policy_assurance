@@ -74,6 +74,7 @@ export const policyRequirements = pgTable("policy_requirement", {
   description: text("description"),
   visibility: policyVisibility("visibility").notNull(),
   appliesToAllSchools: boolean("applies_to_all_schools").notNull().default(true),
+  mandatory: boolean("mandatory").notNull().default(false),
   riskLevel: policyRiskLevel("risk_level").notNull().default("medium"),
   responsibleRole: text("responsible_role"),
   councilEndorsementRequired: boolean("council_endorsement_required").notNull().default(false),

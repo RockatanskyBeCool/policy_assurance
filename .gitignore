@@ -13,3 +13,4 @@ data/**
 *.tsbuildinfo
 .tanstack/
 ~$*.pptx
+~$*

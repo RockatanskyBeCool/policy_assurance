@@ -112,6 +112,18 @@ The command:
 - saves page evidence, PDF metadata, match confidence, inventory rows, and findings to Postgres
 - writes local evidence artifacts under `storage/schools/{schoolId}/runs/{crawlRunId}/`
 
+## Template Alignment Analysis
+
+After a candidate PDF is extracted and matched to a Department policy requirement, the next workflow step is an LLM-assisted comparison against the active Department template. The alignment step is designed to produce evidence-backed gap analysis for users, not a raw text diff.
+
+The current contract lives in `@school-policy/pdf` and exports:
+
+- `PolicyAlignmentService`
+- `buildPolicyAlignmentPrompt`
+- `PolicyAlignmentReportSchema`
+
+See `docs/policy-template-alignment-workflow.md` for the pipeline, report shape, finding types, and guardrails.
+
 ## Local Admin URLs
 
 - Supabase Studio: <http://127.0.0.1:54323>
