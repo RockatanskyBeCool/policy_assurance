@@ -728,10 +728,23 @@ input {
   font-weight: 790;
 }
 
+.status-badge[data-tone="positive"],
 .status-badge[data-positive="true"] {
   border-color: rgba(24, 184, 119, 0.42);
   background: rgba(24, 184, 119, 0.12);
   color: #74e5b5;
+}
+
+.status-badge[data-tone="neutral"] {
+  border-color: rgba(149, 163, 184, 0.35);
+  background: rgba(149, 163, 184, 0.12);
+  color: #cbd5e1;
+}
+
+.status-badge[data-tone="negative"] {
+  border-color: rgba(255, 102, 83, 0.42);
+  background: rgba(215, 70, 50, 0.13);
+  color: #ff9b8f;
 }
 
 @media (max-width: 900px) {

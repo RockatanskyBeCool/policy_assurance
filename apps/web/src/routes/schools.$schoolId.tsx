@@ -39,8 +39,8 @@ type SchoolPolicyInventoryResponse = {
     policyRequirementId: string
     policyName: string
     present: boolean
-    linked: boolean
-    duplicates: boolean
+    linked?: boolean
+    duplicates?: boolean
     approvalDate: string | null
     approvedBy: string[]
     reviewCycleYears: number | null
@@ -48,8 +48,8 @@ type SchoolPolicyInventoryResponse = {
     compliant: boolean
     criteria: {
       present: boolean
-      linked: boolean
-      noDuplicateVersions: boolean
+      linked?: boolean
+      noDuplicateVersions?: boolean
       reviewDateInFuture: boolean
       templateAligned?: boolean
       mandatoryClausesPresent?: boolean
@@ -63,9 +63,9 @@ type SchoolPolicyInventoryResponse = {
       extractionId: string | null
       extractionConfidence: number | null
       requiresHumanReview: boolean
-      brokenLinkCount: number
-      duplicateFindingCount: number
-      duplicateCandidateCount: number
+      brokenLinkCount?: number
+      duplicateFindingCount?: number
+      duplicateCandidateCount?: number
     }
   }>
 }
@@ -148,33 +148,43 @@ function SchoolPolicyInventoryView() {
                 </tr>
               </thead>
               <tbody>
-                {policies.map((policy) => (
-                  <tr key={policy.policyRequirementId}>
-                    <td>
-                      <span className="policy-name">{policy.policyName}</span>
-                    </td>
-                    <td>
-                      <StatusBadge value={policy.present} positiveLabel="Yes" negativeLabel="No" />
-                    </td>
-                    <td>
-                      <StatusBadge value={policy.linked} positiveLabel="Yes" negativeLabel="No" />
-                    </td>
-                    <td>
-                      <StatusBadge value={!policy.duplicates} positiveLabel="No" negativeLabel="Yes" />
-                    </td>
-                    <td>{formatDate(policy.approvalDate)}</td>
-                    <td>{policy.approvedBy.length > 0 ? policy.approvedBy.join(', ') : 'Not found'}</td>
-                    <td>{policy.reviewCycleYears ? `${policy.reviewCycleYears} years` : 'Not found'}</td>
-                    <td>{formatDate(policy.nextReviewDate)}</td>
-                    <td>
-                      <StatusBadge
-                        value={policy.compliant}
-                        positiveLabel="Yes"
-                        negativeLabel="No"
-                      />
-                    </td>
-                  </tr>
-                ))}
+                {policies.map((policy) => {
+                  const linked = hasHealthyPolicyLink(policy)
+                  const duplicates = hasDuplicatePolicyLinks(policy)
+
+                  return (
+                    <tr key={policy.policyRequirementId}>
+                      <td>
+                        <span className="policy-name">{policy.policyName}</span>
+                      </td>
+                      <td>
+                        <StatusBadge value={policy.present} positiveLabel="Yes" negativeLabel="No" />
+                      </td>
+                      <td>
+                        <StatusBadge value={linked} positiveLabel="Yes" negativeLabel="No" />
+                      </td>
+                      <td>
+                        <StatusBadge
+                          value={duplicates}
+                          positiveLabel="Yes"
+                          negativeLabel="No"
+                          tone={duplicates ? 'negative' : 'neutral'}
+                        />
+                      </td>
+                      <td>{formatDate(policy.approvalDate)}</td>
+                      <td>{policy.approvedBy.length > 0 ? policy.approvedBy.join(', ') : 'Not found'}</td>
+                      <td>{policy.reviewCycleYears ? `${policy.reviewCycleYears} years` : 'Not found'}</td>
+                      <td>{formatDate(policy.nextReviewDate)}</td>
+                      <td>
+                        <StatusBadge
+                          value={policy.compliant}
+                          positiveLabel="Yes"
+                          negativeLabel="No"
+                        />
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -280,14 +290,39 @@ type StatusBadgeProps = Readonly<{
   value: boolean
   positiveLabel: string
   negativeLabel: string
+  tone?: 'auto' | 'positive' | 'negative' | 'neutral'
 }>
 
-function StatusBadge({ value, positiveLabel, negativeLabel }: StatusBadgeProps) {
+function StatusBadge({ value, positiveLabel, negativeLabel, tone = 'auto' }: StatusBadgeProps) {
+  const resolvedTone = tone === 'auto' ? (value ? 'positive' : 'negative') : tone
+
   return (
-    <span className="status-badge" data-positive={value}>
+    <span className="status-badge" data-positive={value} data-tone={resolvedTone}>
       {value ? positiveLabel : negativeLabel}
     </span>
   )
+}
+
+type InventoryPolicy = SchoolPolicyInventoryResponse['policies'][number]
+
+function hasHealthyPolicyLink(policy: InventoryPolicy) {
+  if (typeof policy.linked === 'boolean') {
+    return policy.linked
+  }
+
+  if (typeof policy.evidence.brokenLinkCount === 'number') {
+    return policy.present && policy.evidence.brokenLinkCount === 0
+  }
+
+  return policy.present
+}
+
+function hasDuplicatePolicyLinks(policy: InventoryPolicy) {
+  if (typeof policy.duplicates === 'boolean') {
+    return policy.duplicates
+  }
+
+  return (policy.evidence.duplicateCandidateCount ?? 0) > 1 || (policy.evidence.duplicateFindingCount ?? 0) > 0
 }
 
 function formatDate(value: string | null) {
